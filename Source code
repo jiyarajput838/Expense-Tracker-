@@ -1,0 +1,177 @@
+// Source code is decompiled from a .class file using FernFlower decompiler (from Intellij IDEA).
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class ExpenseTracker {
+   static Scanner scanner;
+   static ArrayList<Expense> expenses;
+
+   static {
+      scanner = new Scanner(System.in);
+      expenses = new ArrayList();
+   }
+
+   public ExpenseTracker() {
+   }
+
+   public static void main(String[] args) {
+      int choice;
+      do {
+         displayMenu();
+         choice = readInteger("Enter your choice: ");
+         switch (choice) {
+            case 1:
+               addExpense();
+               break;
+            case 2:
+               viewExpenses();
+               break;
+            case 3:
+               showTotalExpense();
+               break;
+            case 4:
+               searchByCategory();
+               break;
+            case 5:
+               deleteExpense();
+               break;
+            case 6:
+               System.out.println("Thank you for using Expense Tracker.");
+               break;
+            default:
+               System.out.println("Invalid choice. Please try again.");
+         }
+      } while(choice != 6);
+
+      scanner.close();
+   }
+
+   public static void displayMenu() {
+      System.out.println("\n=================================");
+      System.out.println("          EXPENSE TRACKER");
+      System.out.println("=================================");
+      System.out.println("1. Add Expense");
+      System.out.println("2. View All Expenses");
+      System.out.println("3. Show Total Expense");
+      System.out.println("4. Search by Category");
+      System.out.println("5. Delete Expense");
+      System.out.println("6. Exit");
+      System.out.println("=================================");
+   }
+
+   public static void addExpense() {
+      System.out.print("Enter expense description: ");
+      String description = scanner.nextLine();
+      if (description.trim().isEmpty()) {
+         System.out.println("Description cannot be empty.");
+      } else {
+         System.out.print("Enter category, for example Food or Travel: ");
+         String category = scanner.nextLine();
+         if (category.trim().isEmpty()) {
+            System.out.println("Category cannot be empty.");
+         } else {
+            double amount = readDouble("Enter amount: ₹");
+            if (amount <= (double)0.0F) {
+               System.out.println("Amount must be greater than zero.");
+            } else {
+               expenses.add(new Expense(description, category, amount));
+               System.out.println("Expense added successfully.");
+            }
+         }
+      }
+   }
+
+   public static void viewExpenses() {
+      if (expenses.isEmpty()) {
+         System.out.println("No expenses found.");
+      } else {
+         System.out.println("\nAll Expenses");
+         System.out.println("---------------------------------");
+
+         for(int i = 0; i < expenses.size(); ++i) {
+            ((Expense)expenses.get(i)).displayExpense(i + 1);
+         }
+
+      }
+   }
+
+   public static void showTotalExpense() {
+      if (expenses.isEmpty()) {
+         System.out.println("No expenses found.");
+      } else {
+         double total = (double)0.0F;
+
+         for(Expense expense : expenses) {
+            total += expense.getAmount();
+         }
+
+         System.out.printf("Total expense: ₹%.2f%n", total);
+      }
+   }
+
+   public static void searchByCategory() {
+      if (expenses.isEmpty()) {
+         System.out.println("No expenses found.");
+      } else {
+         System.out.print("Enter category to search: ");
+         String category = scanner.nextLine();
+         boolean found = false;
+         double categoryTotal = (double)0.0F;
+         System.out.println("\nExpenses in category: " + category);
+
+         for(int i = 0; i < expenses.size(); ++i) {
+            Expense expense = (Expense)expenses.get(i);
+            if (expense.getCategory().equalsIgnoreCase(category)) {
+               expense.displayExpense(i + 1);
+               categoryTotal += expense.getAmount();
+               found = true;
+            }
+         }
+
+         if (!found) {
+            System.out.println("No expenses found in this category.");
+         } else {
+            System.out.printf("Total for %s: ₹%.2f%n", category, categoryTotal);
+         }
+
+      }
+   }
+
+   public static void deleteExpense() {
+      if (expenses.isEmpty()) {
+         System.out.println("No expenses found.");
+      } else {
+         viewExpenses();
+         int expenseNumber = readInteger("Enter expense number to delete: ");
+         if (expenseNumber >= 1 && expenseNumber <= expenses.size()) {
+            expenses.remove(expenseNumber - 1);
+            System.out.println("Expense deleted successfully.");
+         } else {
+            System.out.println("Invalid expense number.");
+         }
+
+      }
+   }
+
+   public static int readInteger(String message) {
+      while(true) {
+         try {
+            System.out.print(message);
+            return Integer.parseInt(scanner.nextLine());
+         } catch (NumberFormatException var2) {
+            System.out.println("Please enter a valid whole number.");
+         }
+      }
+   }
+
+   public static double readDouble(String message) {
+      while(true) {
+         try {
+            System.out.print(message);
+            return Double.parseDouble(scanner.nextLine());
+         } catch (NumberFormatException var2) {
+            System.out.println("Please enter a valid amount.");
+         }
+      }
+   }
+}
